@@ -47,3 +47,41 @@ repositories {
 	jcenter()
 	maven(url = "https://repo.spring.io/libs-milestone")
 }
+
+dependencies {
+	listOf(
+			kotlin("stdlib-jre8"),
+
+			springBoot("actuator"),
+			springBoot("starter-logging"),
+			springBoot("starter-security"),
+			springBoot("starter-web"),
+
+			"org.springframework.data:spring-data-jpa",
+			"org.springframework:spring-jdbc",
+			"org.hibernate:hibernate-entitymanager",
+
+			springSecurity("config"),
+			springSecurity("web"),
+
+
+			"org.slf4j:slf4j-api",
+			"org.slf4j:jcl-over-slf4j",
+			"ch.qos.logback:logback-classic"
+	).forEach { compile(it) }
+
+	listOf(
+			springBoot("devtools"),
+			"com.h2database:h2",
+			"org.postgresql:postgresql"
+	).forEach { runtime(it) }
+
+	listOf(
+			springBoot("starter-test"),
+			springSecurity("test")
+	).forEach { testCompile(it) }
+}
+
+fun springBoot(module: String, version: String = "") = "org.springframework.boot:spring-boot-$module:$version"
+fun springFramework(module: String, version: String = "") = "org.springframework:spring-$module:$version"
+fun springSecurity(module: String, version: String = "") = "org.springframework.security:spring-security-$module:$version"
