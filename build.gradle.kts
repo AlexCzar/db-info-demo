@@ -51,27 +51,23 @@ repositories {
 dependencies {
 	listOf(
 			kotlin("stdlib-jre8"),
+			kotlin("reflect"),
 
 			springBoot("actuator"),
 			springBoot("starter-logging"),
 			springBoot("starter-security"),
 			springBoot("starter-web"),
+			springBoot("devtools"),
 
 			"org.springframework.data:spring-data-jpa",
 			"org.springframework:spring-jdbc",
 			"org.hibernate:hibernate-entitymanager",
 
 			springSecurity("config"),
-			springSecurity("web"),
-
-
-			"org.slf4j:slf4j-api",
-			"org.slf4j:jcl-over-slf4j",
-			"ch.qos.logback:logback-classic"
+			springSecurity("web")
 	).forEach { compile(it) }
 
 	listOf(
-			springBoot("devtools"),
 			"com.h2database:h2",
 			"org.postgresql:postgresql"
 	).forEach { runtime(it) }
