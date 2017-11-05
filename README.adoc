@@ -1,0 +1,43 @@
+= db-info-demo
+
+Spring Boot + Kotlin demo application. This was received as a practical assignment for an interview for a Java Developer position. I'd like to also use it to demonstrate some new technologies, like https://github.com/gradle/kotlin-dsl[gradle kotlin-dsl], http://kotlinlang.org/[kotlin] itself and maybe some features of https://docs.spring.io/spring-boot/docs/2.0.x/reference/html/[spring boot 2.0] and https://docs.spring.io/spring-framework/docs/5.0.x/spring-framework-reference/[Spring 5.0]
+
+== TLDR:
+
+This task is about implementing of web based database browser (similar to desktop
+application https://dbeaver.jkiss.org/[DBeaver]) with basic functionality and for single database vendor only.
+
+Browser should be able to register multiple database connections and browse their data and structure.
+The result should be RESTful service with its own database.
+This task should be implemented in Java. Database for persistence of data is your choice. If no other information about technology is specified, you can use whatever technologies/frameworks you like.
+
+== Part 1:
+Implement backend for saving, updating, listing and deleting connection details to your favourite relational database.
+E.g. If you choose the MySQL database, you should persist at least the following properties:
+
+name:: custom name of the database instance
+hostname:: hostname of the database
+port:: port where the database runs
+databaseName:: name of the database
+username:: username for connecting to the database
+password:: password for connecting to the database
+
+Connection details themselves should be stored in a database of your choice.
+
+== Part 2:
+Design and implement REST API for browsing structure and data using your stored database
+connections from Task 1. Your API should support the following operations:
+
+* Listing schemas (if your selected database supports them)
+* Listing tables
+* Listing columns
+* Data preview of the table
+
+Resources should contain as much information you can find (data type, if it is primary key, etc.).
+
+== Bonus tasks
+Design and implement REST API endpoints for statistics:
+
+* Single endpoint for statistics about each column: min, max, avg, median value of the column.
+* Single endpoint for statistics about each table: number of records, number of attributes.
+* Document this REST API
