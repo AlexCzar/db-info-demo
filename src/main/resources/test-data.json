@@ -1,0 +1,23 @@
+{
+  "_class": "io.czar.dbinfodemo.init.DataSet",
+  "users": [
+    {
+      "_class": "io.czar.dbinfodemo.model.UserAccount",
+      "@id": 1,
+      "username": "test",
+      "password": "$2a$08$LZVVgqWZD23kbRGcvUaZueGy2TX1.IOIVlhGP7i/2xWG7KHVSBfsS",
+      "enabled": true
+    }
+  ],
+  "configurations": [
+    {
+      "_class": "io.czar.dbinfodemo.model.PostgreSettings",
+      "userId": 1,
+      "name": "dbinfodemo",
+      "host": "localhost",
+      "database": "dbinfodemo",
+      "user": "dbinfodemo",
+      "password": "dbinfodemo"
+    }
+  ]
+}

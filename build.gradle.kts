@@ -62,13 +62,13 @@ dependencies {
 			"org.springframework.data:spring-data-jpa",
 			"org.springframework:spring-jdbc",
 			"org.hibernate:hibernate-entitymanager",
+			"com.h2database:h2",
 
 			springSecurity("config"),
 			springSecurity("web")
 	).forEach { compile(it) }
 
 	listOf(
-			"com.h2database:h2",
 			"org.postgresql:postgresql"
 	).forEach { runtime(it) }
 

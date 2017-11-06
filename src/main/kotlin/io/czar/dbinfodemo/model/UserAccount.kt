@@ -11,7 +11,9 @@ class UserAccount(
 		@Column(unique = true, nullable = false, updatable = false)
 		val username: String,
 		var password: String,
-		var enabled: Boolean = true
+		var enabled: Boolean = true,
+		@OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
+		val configurations: MutableSet<PostgreSettings> = mutableSetOf()
 ) : BaseEntity {
 
 	@Column(unique = true)

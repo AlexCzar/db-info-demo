@@ -1,12 +1,17 @@
 package io.czar.dbinfodemo
 
+import io.czar.dbinfodemo.model.UserAccount
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-import java.security.Principal
 
 @RestController
 class HelloController {
 
-	@GetMapping("/hello")
-	fun sayHi(principal: Principal) = "Hello, ${principal.name}!"
+	@GetMapping("/")
+	fun sayHi(user: UserAccount): String {
+		return """Hello, ${user.username}!
+			|You have following configurations set up:
+			|${user.configurations}
+		""".trimMargin()
+	}
 }
