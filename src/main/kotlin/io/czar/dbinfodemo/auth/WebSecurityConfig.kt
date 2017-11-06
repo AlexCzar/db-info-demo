@@ -4,54 +4,36 @@ import io.czar.dbinfodemo.model.UserAccount
 import io.czar.dbinfodemo.model.UserAccountRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.web.AuthenticationEntryPoint
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
-import javax.servlet.http.HttpServletResponse
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfig(
 		val userAccountRepository: UserAccountRepository
-) : WebSecurityConfigurerAdapter() {
+) : WebMvcConfigurer {
 
 
-	override fun userDetailsService() = UserDetailsService { username: String ->
+	@Bean
+	fun userDetailsService() = UserDetailsService { username: String ->
 		userAccountRepository.findByUsernameLowerCased(username.toLowerCase())?.toUserDetails()
 				?: throw UsernameNotFoundException("Could not find user with username $username")
 	}
 
 	@Bean
-	fun restAuthenticationEntryPoint() = AuthenticationEntryPoint { _, response, _ ->
-		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
-	}
+	fun passwordEncoder() = BCryptPasswordEncoder()
 
-	override fun configure(http: HttpSecurity) {
-		http
-				.csrf().disable()
-				.exceptionHandling()
-				.authenticationEntryPoint(restAuthenticationEntryPoint())
-				.and()
-				.authorizeRequests()
-				.antMatchers("/api/user", "/api/user/**").authenticated()
-				.and()
-				.formLogin()
-				.successHandler(authenticationSuccessHandler())
-				.failureHandler(SimpleUrlAuthenticationFailureHandler())
-				.and()
-				.logout()
+	override fun addViewControllers(registry: ViewControllerRegistry) {
+		registry.addRedirectViewController("/", "/user")
 	}
-
-	@Bean
-	fun authenticationSuccessHandler() = ApiSavedRequestAwareAuthenticationSuccessHandler()
 }
 
 private fun UserAccount.toUserDetails(): UserDetails = User(
