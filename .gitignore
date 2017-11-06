@@ -6,3 +6,4 @@ dist/
 # intellij
 .idea/
 *.iml
+out/
