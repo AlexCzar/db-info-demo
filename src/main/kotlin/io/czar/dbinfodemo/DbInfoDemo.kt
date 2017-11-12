@@ -3,8 +3,8 @@ package io.czar.dbinfodemo
 import io.czar.dbinfodemo.model.UserAccount
 import io.czar.dbinfodemo.model.UserAccountRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.MethodParameter
 import org.springframework.stereotype.Service
@@ -17,11 +17,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 
 fun main(args: Array<String>) {
-	SpringApplication.run(Application::class.java, *args)
+	runApplication<DbInfoDemo>(*args)
 }
 
 @SpringBootApplication
-class Application
+class DbInfoDemo
 
 @Configuration
 class WebConfig : WebMvcConfigurer {

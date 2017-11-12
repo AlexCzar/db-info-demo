@@ -12,9 +12,7 @@ class UserController {
 	@GetMapping
 	fun sayHi(user: UserAccount): String {
 		return """Hello, ${user.username}!
-			|
 			|You have following configurations set up:
-			|
 			|${user.configurations}
 		""".trimMargin()
 	}
