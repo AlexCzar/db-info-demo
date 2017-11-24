@@ -1,4 +1,4 @@
-package io.czar.dbinfodemo
+package io.czar.dbinfodemo.utils
 
 import io.czar.dbinfodemo.security.WebSecurityConfig
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -44,7 +44,6 @@ class TestRestClient(val rest: TestRestTemplate) {
 					set(HttpHeaders.COOKIE, "${WebSecurityConfig.CSRF_COOKIE}=$csrfToken")
 					set(WebSecurityConfig.CSRF_HEADER, csrfToken)
 				}
-
 			}, { response: ClientHttpResponse -> Credentials(response.headers[HttpHeaders.AUTHORIZATION]?.get(0)) })
 
 }

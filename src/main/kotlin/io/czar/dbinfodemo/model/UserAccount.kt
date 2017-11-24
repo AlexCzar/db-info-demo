@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.*
 
 @Entity(name = "user_accounts")
-class UserAccount(
+data class UserAccount(
 		@Id
 		@GeneratedValue
 		override val id: Long? = null,

@@ -20,8 +20,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.access.AccessDeniedHandlerImpl
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler
-import org.springframework.security.web.csrf.CsrfFilter
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import javax.servlet.http.HttpServletRequest
@@ -58,11 +56,13 @@ class WebSecurityConfig(private val userAccountRepository: UserAccountRepository
 		authenticationManagerBuilder
 				.userDetailsService(userDetailsService())
 				.passwordEncoder(passwordEncoder())
+
 	}
 
 	override fun configure(http: HttpSecurity): Unit = with(http) {
 		csrf().disable()
-				.addFilterBefore(statelessCsrfFilter(), CsrfFilter::class.java)
+				// uncomment to enable (currently disabled for easier curl testing
+//				.addFilterBefore(statelessCsrfFilter(), CsrfFilter::class.java)
 
 		exceptionHandling().authenticationEntryPoint { _: HttpServletRequest, response: HttpServletResponse, _: AuthenticationException ->
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
@@ -102,17 +102,15 @@ class WebSecurityConfig(private val userAccountRepository: UserAccountRepository
 
 	@Bean
 	fun authenticationSuccessHandler() = object : SimpleUrlAuthenticationSuccessHandler() {
-		override fun onAuthenticationSuccess(request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication) = clearAuthenticationAttributes(request)
+		override fun onAuthenticationSuccess(request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication) =
+				clearAuthenticationAttributes(request)
 	}
 
-	@Bean
-	fun logoutSuccessHandler() =
-			LogoutSuccessHandler { _: HttpServletRequest, _: HttpServletResponse, _: Authentication -> Unit }
-
-
-	private fun UserAccount.toUserDetails(): UserDetails = User(
-			username, password, enabled,
-			true, true, true,
-			setOf(SimpleGrantedAuthority("USER")))
+	private fun UserAccount.toUserDetails(): UserDetails =
+			IdentifiedUser(checkNotNull(id), username, password, enabled)
 }
+
+class IdentifiedUser(
+		val id: Long, username: String, password: String, enabled: Boolean
+) : User(username, password, enabled, true, true, true, setOf(SimpleGrantedAuthority("USER"))), UserDetails
 

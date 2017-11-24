@@ -25,5 +25,4 @@ class UserRegistrationService(
 			password = passwordEncoder.encode(password)
 	)
 
-
 }

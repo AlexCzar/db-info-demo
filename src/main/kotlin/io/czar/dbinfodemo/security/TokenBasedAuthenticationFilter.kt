@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import java.util.*
 import javax.servlet.FilterChain
@@ -21,15 +20,18 @@ class TokenBasedAuthenticationFilter(authenticationManager: AuthenticationManage
 	 * Secret to use for JWT encryption.
 	 */
 	lateinit var secret: String
+
 	init {
 		setAuthenticationManager(authenticationManager)
 	}
 
 	override fun successfulAuthentication(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain?,
 										  authentication: Authentication) {
+		val identifiedUser = authentication.principal as IdentifiedUser
 		val token = Jwts.builder()
 				.setId(UUID.randomUUID().toString())
-				.setSubject((authentication.principal as User).username)
+				.setSubject(identifiedUser.username)
+				.claim("userId", identifiedUser.id)
 				.setExpiration(Date(System.currentTimeMillis() + TOKEN_LIFETIME))
 				.signWith(SignatureAlgorithm.HS512, secret)
 				.compact()

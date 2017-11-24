@@ -16,10 +16,9 @@ buildscript {
 }
 
 plugins {
+	val kotlinVersion = "1.1.60"
 	java
-	groovy
-	`kotlin-dsl`
-	val kotlinVersion = "1.1.51"
+	id("org.jetbrains.kotlin.jvm") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
 	id("io.spring.dependency-management") version "1.0.3.RELEASE"
@@ -30,6 +29,11 @@ apply { plugin("org.springframework.boot") }
 group = "io.czar"
 version = "1.0"
 
+val kotlinVersion: String? by extra {
+	buildscript.configurations["classpath"]
+			.resolvedConfiguration.firstLevelModuleDependencies
+			.find { it.moduleName == "kotlin-gradle-plugin" }?.moduleVersion
+}
 java {
 	sourceCompatibility = VERSION_1_8
 	targetCompatibility = VERSION_1_8
@@ -51,10 +55,13 @@ repositories {
 
 dependencies {
 	listOf(
-			kotlin("stdlib-jre8"),
-			kotlin("reflect"),
+//			kotlin("stdlib", kotlinVersion),
+//			kotlin("stdlib-jre7", kotlinVersion),
+			kotlin("stdlib-jre8", kotlinVersion),
+			kotlin("reflect", kotlinVersion),
 
 			springBoot("actuator"),
+			springBoot("starter-logging"),
 			springBoot("starter-security"),
 			springBoot("starter-web"),
 
@@ -62,34 +69,22 @@ dependencies {
 			"org.springframework:spring-jdbc",
 			"org.hibernate:hibernate-entitymanager",
 			"com.h2database:h2",
+			"com.zaxxer:HikariCP",
 
 			springSecurity("config"),
 			springSecurity("web"),
 			"io.jsonwebtoken:jjwt:0.9.0",
 			"org.postgresql:postgresql"
-	).forEach { compile(it) }
+	).forEach { implementation(it) }
 
-	runtime(springBoot("starter-logging"))
-	runtime(springBoot("devtools"))
+	runtimeOnly(springBoot("devtools"))
 
 	listOf(
 			springBoot("starter-test"),
-			springSecurity("test")
-	).forEach { testCompile(it) }
+			springSecurity("test"),
+			"com.jayway.jsonpath:json-path-assert"
+	).forEach { testImplementation(it) }
 }
-
-// There is an apparent bug in gradle kotlin-dsl see this issue:
-// https://github.com/gradle/kotlin-dsl/issues/590
-// Since it's a demo project I won't rewrite this to groovy,
-// but we'll have to exclude logback.
-// To execute without this, e.g. when building a final jar without running tests
-// use -DkotlinDslHack=false
-if (System.getProperty("kotlinDslHack", "true").toBoolean())
-	configurations {
-		"compile" {
-			exclude(group = "ch.qos.logback", module = "logback-classic")
-		}
-	}
 
 fun springBoot(module: String, version: String = "") = "org.springframework.boot:spring-boot-$module:$version"
 fun springFramework(module: String, version: String = "") = "org.springframework:spring-$module:$version"

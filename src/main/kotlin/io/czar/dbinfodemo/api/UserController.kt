@@ -1,19 +1,26 @@
 package io.czar.dbinfodemo.api
 
 import io.czar.dbinfodemo.model.UserAccount
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import io.czar.dbinfodemo.services.JdbcTemplateDatabaseAccessService
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/user")
-class UserController {
+class UserController(
+		val databaseAccessService: JdbcTemplateDatabaseAccessService
+) {
 
 	@GetMapping
-	fun sayHi(user: UserAccount): String {
-		return """Hello, ${user.username}!
-			|You have following configurations set up:
-			|${user.configurations}
-		""".trimMargin()
-	}
+	fun getUserData(user: UserAccount): String = user.toString()
+
+	@GetMapping("/database/{dbName}/check")
+	fun checkDatabaseConnection(user: UserAccount, @PathVariable("dbName") dbName: String) =
+			databaseAccessService.checkConnection(dbName)
+
+	@GetMapping("/database/{dbName}/listTables")
+	fun listDatabaseTables(
+			user: UserAccount,
+			@PathVariable("dbName") dbName: String,
+			@RequestParam("schema") schema: String?) =
+			databaseAccessService.listTables(dbName, schema)
 }

@@ -23,14 +23,25 @@ class TokenBasedAuthorizationFilter internal constructor(authenticationManager: 
 		if (authorizationToken != null && authorizationToken.startsWith(TOKEN_PREFIX)) {
 			authorizationToken = authorizationToken.replaceFirst(TOKEN_PREFIX.toRegex(), "")
 
-			val username = Jwts.parser()
+			val userId = Jwts.parser()
 					.setSigningKey(secret)
 					.parseClaimsJws(authorizationToken)
-					.body.subject
+					.body["userId"].let {
+				when (it) {
+					is Int -> it.toLong()
+					is Long -> it
+					else -> throw IllegalArgumentException("UserId should be of type Long.")
+				}
+			}
 
-			SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(username, null, emptyList<GrantedAuthority>())
+			SecurityContextHolder.getContext().authentication =
+					UsernamePasswordAuthenticationToken(userId, null, listOf(UserAuthority))
 		}
 
 		chain.doFilter(request, response)
 	}
+}
+
+object UserAuthority : GrantedAuthority {
+	override fun getAuthority() = "USER"
 }
