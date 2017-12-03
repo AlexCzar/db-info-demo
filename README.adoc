@@ -41,3 +41,40 @@ Design and implement REST API endpoints for statistics:
 * Single endpoint for statistics about each column: min, max, avg, median value of the column.
 * Single endpoint for statistics about each table: number of records, number of attributes.
 * Document this REST API
+
+== Instructions for running the implementation
+Solution was written with local PostgreSQL in mind.
+
+Tested with PostgreSQL 9.6, but should work with any version reasonably close to 9.6.
+
+Instructions are provided for Linux environment and should work on OpenSUSE Tumbleweed without modification,
+if another distribution is used YMMV but not too much.
+
+=== Setup
+
+. Install and start PostgreSQL: `sudo zypper in postgresql96{,-server} && sudo systemctl start postgresql`
+. Enable local login via password: edit `/var/lib/pgsql/data/pg_hba.conf` file, change METHOD `ident` to `md5` in `host    all             all             127.0.0.1/32            ident` line and restart PostgreSQL: `sudo systemctl restart postgresql`
+. Clone the solution project: `git clone git@github.com:AlexCzar/db-info-demo.git && cd db-info-demo` and restart
+. Initialize demo database: `sudo su postgres -c psql < /path/to/db-info-demo/support/createDb.sql`
+
+NOTE: In a real project, I'd setup a dockerized test which would launch a PostgreSQL container with proper initialization.
+Here manually installed and initialized database is used for convenience to reduce project dependencies on the environment, in my experience installing PgSQL is much simpler than Docker.
+
+=== Working with solution project
+
+Project is configured to use latest version (for the moment of writing) of gradle wrapper.
+
+It was tested to work well with IntelliJ 2017.2.6 and with Kotlin plugin 1.2.0
+
+Internal database is initialized on startup with a default user (u: `test`, p: `test`) and default database configuration.
+
+The security is configured to implement stateless CSRF protection, but it is disabled so that it is easy to test via `curl`.
+To enable CSRF protection pass set `security.csrfEnabled: true` in `db-info-demo/src/main/resources/application.yml`.
+
+To run the solution, execute `./gradlew bootRun`.
+
+To log in with pre-defined user (example in SHELL script):
+`export AUTH_HEADER=$(curl -v http://localhost:8080/login -d 'username=test&password=test' 2>&1 | sed -En 's/^.*(Authorization.*)/\1/p')`
+this will save authorization token header in an environment variable `AUTH_HEADER`.
+
+To call a ws method, e.g. `/user` (after you have the token): `curl -H "$AUTH_HEADER" http://localhost:8080/user`

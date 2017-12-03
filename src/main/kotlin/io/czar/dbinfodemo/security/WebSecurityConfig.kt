@@ -3,6 +3,8 @@ package io.czar.dbinfodemo.security
 import io.czar.dbinfodemo.model.UserAccount
 import io.czar.dbinfodemo.model.UserAccountRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -20,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.access.AccessDeniedHandlerImpl
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
+import org.springframework.security.web.csrf.CsrfFilter
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import javax.servlet.http.HttpServletRequest
@@ -36,7 +39,13 @@ class WebMvcConfig : WebMvcConfigurer {
 
 @Configuration
 @EnableWebSecurity
-class WebSecurityConfig(private val userAccountRepository: UserAccountRepository) : WebSecurityConfigurerAdapter() {
+@ConfigurationProperties("security")
+class WebSecurityConfig(
+		private val userAccountRepository: UserAccountRepository,
+		@Value("\${security.csrfEnabled:true}")
+		private val csrfEnabled: Boolean
+) : WebSecurityConfigurerAdapter() {
+
 	companion object {
 		const val CSRF_COOKIE = "CSRF-TOKEN"
 		const val CSRF_HEADER = "X-CSRF-TOKEN"
@@ -60,10 +69,10 @@ class WebSecurityConfig(private val userAccountRepository: UserAccountRepository
 	}
 
 	override fun configure(http: HttpSecurity): Unit = with(http) {
-		csrf().disable()
-				// uncomment to enable (currently disabled for easier curl testing
-//				.addFilterBefore(statelessCsrfFilter(), CsrfFilter::class.java)
-
+		val configurer = csrf().disable()
+		if (csrfEnabled) {
+			configurer.addFilterBefore(statelessCsrfFilter(), CsrfFilter::class.java)
+		}
 		exceptionHandling().authenticationEntryPoint { _: HttpServletRequest, response: HttpServletResponse, _: AuthenticationException ->
 			response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
 		}

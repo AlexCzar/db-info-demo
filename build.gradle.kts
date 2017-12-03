@@ -11,12 +11,12 @@ buildscript {
 
 	dependencies {
 		// TODO: move to `plugins` block as soon as 2.0.0.RELEASE comes out
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.M6")
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.M7")
 	}
 }
 
 plugins {
-	val kotlinVersion = "1.1.60"
+	val kotlinVersion = "1.2.0"
 	java
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
@@ -34,6 +34,10 @@ val kotlinVersion: String? by extra {
 			.resolvedConfiguration.firstLevelModuleDependencies
 			.find { it.moduleName == "kotlin-gradle-plugin" }?.moduleVersion
 }
+
+// tell spring boot dep manager which version of Kotlin we're using:
+extra["kotlin.version"] = kotlinVersion
+
 java {
 	sourceCompatibility = VERSION_1_8
 	targetCompatibility = VERSION_1_8
@@ -55,10 +59,9 @@ repositories {
 
 dependencies {
 	listOf(
-//			kotlin("stdlib", kotlinVersion),
-//			kotlin("stdlib-jre7", kotlinVersion),
 			kotlin("stdlib-jre8", kotlinVersion),
 			kotlin("reflect", kotlinVersion),
+			"io.github.microutils:kotlin-logging:1.4.6",
 
 			springBoot("actuator"),
 			springBoot("starter-logging"),

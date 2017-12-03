@@ -14,10 +14,10 @@
       "_class": "io.czar.dbinfodemo.model.PostgreSettings",
       "userId": 1,
       "name": "dbinfodemo",
-      "host": "localhost",
-      "database": "dbinfodemo",
-      "user": "dbinfodemo",
-      "password": "dbinfodemo"
+      "host": "localhost:5432",
+      "database": "dbinfo",
+      "user": "dbinfo",
+      "password": "dbinfo"
     }
   ]
 }

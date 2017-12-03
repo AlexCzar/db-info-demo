@@ -3,22 +3,22 @@ package io.czar.dbinfodemo.model
 
 data class DbInfo(
 		val name: String,
-		val schemas: List<DbSchemaInfo>
-)
-
-data class DbSchemaInfo(
-		val name: String,
-		val tables: List<DbTableInfo>
+		val schemas: List<String>
 )
 
 data class DbTableInfo(
 		val name: String,
 		val type: String,
-		val isInsertable: Boolean,
-		var columns: List<DbColumnInfo> = emptyList()
+		val schema: String,
+		val catalog: String,
+		val remarks: String,
+		val columns: List<DbColumnInfo>
 )
 
 data class DbColumnInfo(
+		val index: Int,
 		val name: String,
-		val type: String
+		val label: String = name,
+		val typeName: String,
+		val type: Int
 )

@@ -2,7 +2,8 @@ spring:
   profiles:
     active: dev
 
-
-security.token.secret: Uk5HIHJhbmRvbSBvZiBjbGljayBudW1iZXJzIGN1c3RvbWl6ZSBtb3JlIGRyYWdvbnMgYnVsbGV0IHNvbiBkcnVpZAo=
+security:
+  token.secret: Uk5HIHJhbmRvbSBvZiBjbGljayBudW1iZXJzIGN1c3RvbWl6ZSBtb3JlIGRyYWdvbnMgYnVsbGV0IHNvbiBkcnVpZAo=
+  csrfEnabled: false
 logging:
   level: debug

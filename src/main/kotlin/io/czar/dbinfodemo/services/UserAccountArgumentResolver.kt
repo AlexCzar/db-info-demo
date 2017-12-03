@@ -2,6 +2,7 @@ package io.czar.dbinfodemo.services
 
 import io.czar.dbinfodemo.model.UserAccount
 import io.czar.dbinfodemo.model.UserAccountRepository
+import mu.KLogging
 import org.springframework.core.MethodParameter
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -15,8 +16,12 @@ import org.springframework.web.method.support.ModelAndViewContainer
 class UserAccountArgumentResolver(
 		val userAccountRepository: UserAccountRepository
 ) : HandlerMethodArgumentResolver {
-	override fun supportsParameter(parameter: MethodParameter) =
-			parameter.parameterType == UserAccount::class.java
+	companion object : KLogging()
+
+	override fun supportsParameter(parameter: MethodParameter) = with(parameter) {
+		logger.info { parameter.parameterAnnotations.map { it.javaClass.name } }
+		parameterType.isAssignableFrom(UserAccount::class.java) && hasParameterAnnotation(CurrentUser::class.java)
+	}
 
 	@Transactional(readOnly = true)
 	override fun resolveArgument(
@@ -25,3 +30,10 @@ class UserAccountArgumentResolver(
 		userAccountRepository.getOne(checkNotNull(it as? Long) { "User should have been identified at this point." })
 	}
 }
+
+/**
+ * Marks UserAccount parameter to be auto-resolved in controller methods
+ */
+@Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class CurrentUser

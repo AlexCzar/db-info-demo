@@ -14,6 +14,8 @@ data class PostgreSettings(
 		var host: String,
 		var database: String,
 		var user: String,
-		var password: String,
-		var url: String? = null
-) : BaseEntity
+		var password: String
+) : BaseEntity {
+
+	fun buildUrl(): String = "jdbc:postgresql://$host/$database"
+}
