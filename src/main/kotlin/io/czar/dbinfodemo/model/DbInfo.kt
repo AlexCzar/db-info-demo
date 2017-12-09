@@ -22,3 +22,12 @@ data class DbColumnInfo(
 		val typeName: String,
 		val type: Int
 )
+
+data class TablePreview(
+		val columns: List<String>,
+		val rows: List<List<Any?>>
+) {
+	companion object {
+		val EMPTY = TablePreview(emptyList(), emptyList())
+	}
+}

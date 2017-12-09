@@ -10,4 +10,5 @@ interface SqlDatabaseAccessService {
 	fun getDbInformation(dbName: String, user: UserAccount): DbInfo
 	fun listTables(dbName: String, schema: String? = null, user: UserAccount, types: List<String>?): List<DbTableInfo>
 	fun getTableInfo(dbName: String, schema: String, tableName: String, user: UserAccount): DbTableInfo
+	fun previewTable(dbName: String, schema: String, tableName: String, user: UserAccount, limit: Int): Any
 }

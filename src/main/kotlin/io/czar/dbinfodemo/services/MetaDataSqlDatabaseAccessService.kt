@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.czar.dbinfodemo.model.*
 import mu.KLogging
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.ResultSetExtractor
 import org.springframework.stereotype.Service
 import java.sql.Connection
@@ -36,6 +37,18 @@ class MetaDataSqlDatabaseAccessService : SqlDatabaseAccessService {
 					if (resultSet.next()) {
 						val name = resultSet.getString("table_name")
 						val currentTableSchema = resultSet.getString("table_schem")
+						val primaryKeys = connection.metaData.getPrimaryKeys(null, schema, name)
+						while (primaryKeys.next()) {
+							logger.info {
+								(primaryKeys.getString("COLUMN_NAME") + "===" + primaryKeys.getString("PK_NAME"))
+							}
+						}
+						val importedKeys = connection.metaData.getImportedKeys(null, schema, name)
+						while (importedKeys.next()) {
+							logger.info {
+								"${importedKeys.getString("PKTABLE_NAME")}.${importedKeys.getString("PKCOLUMN_NAME")}→${importedKeys.getString("FKTABLE_NAME")}.${importedKeys.getString("FKCOLUMN_NAME")}"
+							}
+						}
 						DbTableInfo(
 								name = name,
 								type = resultSet.getString("table_type") ?: "",
@@ -47,6 +60,22 @@ class MetaDataSqlDatabaseAccessService : SqlDatabaseAccessService {
 					} else null
 				}.toList()
 			}
+
+	override fun previewTable(dbName: String, schema: String, tableName: String, user: UserAccount, limit: Int): TablePreview =
+			JdbcTemplate(buildDataSource(dbName, user))
+					.query("SELECT * FROM $schema.$tableName LIMIT $limit", previewExtractor)
+					?: TablePreview.EMPTY
+
+	val previewExtractor = ResultSetExtractor { resultSet ->
+		val columnCount = resultSet.metaData.columnCount
+		val columns: List<String> = (1..columnCount).map(resultSet.metaData::getColumnLabel)
+		val rows: List<List<Any?>> = generateSequence {
+			if (resultSet.next()) {
+				columns.map(resultSet::getObject)
+			} else null
+		}.toList()
+		TablePreview(columns, rows)
+	}
 
 	private fun <T> withDataSourceConnection(dbName: String, user: UserAccount, block: (Connection) -> T) =
 			buildDataSource(dbName, user).connection.use(block)
@@ -69,10 +98,6 @@ class MetaDataSqlDatabaseAccessService : SqlDatabaseAccessService {
 	private fun getDbConfiguration(dbName: String, user: UserAccount): PostgreSettings {
 		logger.info { user.configurations }
 		return user.configurations.find { it.name == dbName } ?: throw IllegalArgumentException("Database $dbName not configured.")
-	}
-
-	private val connectionStatusExtractor = ResultSetExtractor { rs: ResultSet ->
-		if (rs.next() && rs.getInt(1) == 1) "Ok" else "No connection or some other problem"
 	}
 }
 

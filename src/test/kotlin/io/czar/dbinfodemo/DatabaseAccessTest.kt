@@ -5,14 +5,14 @@ import com.jayway.jsonpath.matchers.JsonPathMatchers.withJsonPath
 import io.czar.dbinfodemo.utils.Credentials
 import mu.KLogging
 import org.hamcrest.Matchers
-import org.hamcrest.Matchers.equalTo
-import org.hamcrest.Matchers.greaterThanOrEqualTo
+import org.hamcrest.Matchers.*
 import org.junit.Assert.assertThat
 import org.junit.Test
 import org.springframework.http.HttpStatus
 
 /**
  * Please see README.adoc Setup section!
+ * Tests for [io.czar.dbinfodemo.services.MetaDataSqlDatabaseAccessService]
  */
 class DatabaseAccessTest : BasicTest() {
 	val credentials: Credentials by lazy {
@@ -52,6 +52,24 @@ class DatabaseAccessTest : BasicTest() {
 		restClient.get<String>("/user/database/dbinfodemo/listTables?schema=public&type=table", credentials).run {
 			assertStatus(HttpStatus.OK)
 			assertThat(body, isJson(withJsonPath("$.length()", equalTo(2))))
+		}
+	}
+
+	@Test
+	fun `previewing table`() {
+		restClient.get<String>("/user/database/dbinfodemo/public/orders", credentials).run {
+			assertStatus(HttpStatus.OK)
+			assertThat(body, isJson(allOf(
+					withJsonPath("$.columns.length()", equalTo(3)),
+					withJsonPath("$.columns.*", equalTo(listOf("order_id", "product_id", "quantity"))),
+					withJsonPath("$.rows.length()", equalTo(3)),
+					withJsonPath("$.rows.*", equalTo(listOf(
+							listOf(1, 1, 1),
+							listOf(2, 1, 3),
+							listOf(3, 1, 2)
+					)))
+			)))
+			println(body)
 		}
 	}
 }
