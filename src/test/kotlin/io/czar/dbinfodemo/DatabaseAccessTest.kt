@@ -69,7 +69,20 @@ class DatabaseAccessTest : BasicTest() {
 							listOf(3, 1, 2)
 					)))
 			)))
-			println(body)
+		}
+	}
+
+	@Test
+	fun `previewing table with limit`() {
+		restClient.get<String>("/user/database/dbinfodemo/public/orders?limit=2", credentials).run {
+			assertStatus(HttpStatus.OK)
+			assertThat(body, isJson(allOf(
+					withJsonPath("$.rows.length()", equalTo(2)),
+					withJsonPath("$.rows.*", equalTo(listOf(
+							listOf(1, 1, 1),
+							listOf(2, 1, 3)
+					)))
+			)))
 		}
 	}
 }
