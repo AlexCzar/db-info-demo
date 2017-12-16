@@ -4,36 +4,23 @@ import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-	repositories {
-		maven(url = "https://repo.spring.io/libs-milestone")
-	}
-
-	dependencies {
-		// TODO: move to `plugins` block as soon as 2.0.0.RELEASE comes out
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.M7")
-	}
-}
-
 plugins {
-	val kotlinVersion = "1.2.0"
+	val kotlinVersion = "1.2.10"
 	java
 	id("org.jetbrains.kotlin.jvm") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
 	id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
+	id("org.springframework.boot") version "2.0.0.M7"
 	id("io.spring.dependency-management") version "1.0.3.RELEASE"
 }
-
-apply { plugin("org.springframework.boot") }
 
 group = "io.czar"
 version = "1.0"
 
-val kotlinVersion: String? by extra {
-	buildscript.configurations["classpath"]
-			.resolvedConfiguration.firstLevelModuleDependencies
-			.find { it.moduleName == "kotlin-gradle-plugin" }?.moduleVersion
-}
+val kotlinVersion = buildscript.configurations["classpath"]
+		.resolvedConfiguration.firstLevelModuleDependencies
+		.find { it.moduleName == "org.jetbrains.kotlin.jvm.gradle.plugin" }?.moduleVersion
+
 
 // tell spring boot dep manager which version of Kotlin we're using:
 extra["kotlin.version"] = kotlinVersion
@@ -48,7 +35,7 @@ tasks.withType<KotlinCompile> {
 }
 
 task<Wrapper>("wrapper") {
-	gradleVersion = "4.3.1"
+	gradleVersion = "4.4"
 	distributionType = Wrapper.DistributionType.ALL
 }
 
