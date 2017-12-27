@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @ConfigurationProperties("security.token")
-class TokenBasedAuthorizationFilter internal constructor(authenticationManager: AuthenticationManager) : BasicAuthenticationFilter(authenticationManager) {
+class TokenBasedAuthorizationFilter(authenticationManager: AuthenticationManager) : BasicAuthenticationFilter(authenticationManager) {
 	lateinit var secret: String
 	override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
 

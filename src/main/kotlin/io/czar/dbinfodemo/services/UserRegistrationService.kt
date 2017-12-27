@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserRegistrationService(
-		val passwordEncoder: PasswordEncoder,
-		val userAccountRepository: UserAccountRepository) {
+		private val passwordEncoder: PasswordEncoder,
+		private val userAccountRepository: UserAccountRepository) {
 
 	@Throws(IllegalArgumentException::class)
 	fun register(registration: UserRegistration) {

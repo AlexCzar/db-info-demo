@@ -78,10 +78,11 @@ class WebSecurityConfig(
 		}
 
 		httpBasic().disable()
-				.formLogin().disable()
-				.logout().disable()
-				.addFilter(tokenBasedAuthenticationFilter())
-				.addFilter(tokenBasedAuthorizationFilter())
+		formLogin().disable()
+		logout().disable()
+
+		addFilter(tokenBasedAuthenticationFilter())
+		addFilter(tokenBasedAuthorizationFilter())
 
 		authorizeRequests()
 				.antMatchers("/public/**").permitAll()

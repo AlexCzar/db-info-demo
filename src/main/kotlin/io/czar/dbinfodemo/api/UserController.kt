@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/user")
 class UserController(
-		val databaseAccessService: SqlDatabaseAccessService
+		private val databaseAccessService: SqlDatabaseAccessService
 ) {
 
 	@GetMapping
