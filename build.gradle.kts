@@ -20,6 +20,7 @@ version = "1.0"
 val kotlinVersion = buildscript.configurations["classpath"]
 		.resolvedConfiguration.firstLevelModuleDependencies
 		.find { it.moduleName == "org.jetbrains.kotlin.jvm.gradle.plugin" }?.moduleVersion
+val swaggerVersion = "2.7.0"
 
 
 // tell spring boot dep manager which version of Kotlin we're using:
@@ -64,7 +65,9 @@ dependencies {
 			springSecurity("config"),
 			springSecurity("web"),
 			"io.jsonwebtoken:jjwt:0.9.0",
-			"org.postgresql:postgresql"
+			"org.postgresql:postgresql",
+			"io.springfox:springfox-swagger2:$swaggerVersion",
+			"io.springfox:springfox-swagger-ui:$swaggerVersion"
 	).forEach { implementation(it) }
 
 	runtimeOnly(springBoot("devtools"))

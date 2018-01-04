@@ -85,7 +85,11 @@ class WebSecurityConfig(
 		addFilter(tokenBasedAuthorizationFilter())
 
 		authorizeRequests()
-				.antMatchers("/public/**").permitAll()
+				.antMatchers("/public/**",
+						"/swagger-resources/**",
+						"/swagger-ui.html",
+						"/v2/api-docs",
+						"/webjars/**").permitAll()
 				.antMatchers("/**").authenticated()
 	}
 
