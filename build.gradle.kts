@@ -2,14 +2,14 @@ import org.gradle.api.JavaVersion.VERSION_1_8
 import org.gradle.api.tasks.wrapper.Wrapper
 import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 import org.gradle.kotlin.dsl.*
+import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	val kotlinVersion = "1.2.10"
 	java
-	id("org.jetbrains.kotlin.jvm") version kotlinVersion
-	id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
-	id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
+	id("org.jetbrains.kotlin.jvm")
+	id("org.jetbrains.kotlin.plugin.spring")
+	id("org.jetbrains.kotlin.plugin.jpa")
 	id("org.springframework.boot") version "2.0.0.M7"
 	id("io.spring.dependency-management") version "1.0.3.RELEASE"
 }
@@ -17,14 +17,7 @@ plugins {
 group = "io.czar"
 version = "1.0"
 
-val kotlinVersion = buildscript.configurations["classpath"]
-		.resolvedConfiguration.firstLevelModuleDependencies
-		.find { it.moduleName == "org.jetbrains.kotlin.jvm.gradle.plugin" }?.moduleVersion
 val swaggerVersion = "2.7.0"
-
-
-// tell spring boot dep manager which version of Kotlin we're using:
-extra["kotlin.version"] = kotlinVersion
 
 java {
 	sourceCompatibility = VERSION_1_8
@@ -47,8 +40,8 @@ repositories {
 
 dependencies {
 	listOf(
-			kotlin("stdlib-jre8", kotlinVersion),
-			kotlin("reflect", kotlinVersion),
+			kotlin("stdlib-jre8"),
+			kotlin("reflect"),
 			"io.github.microutils:kotlin-logging:1.4.6",
 
 			springBoot("actuator"),
