@@ -29,7 +29,7 @@ tasks.withType<KotlinCompile> {
 }
 
 task<Wrapper>("wrapper") {
-	gradleVersion = "4.4"
+	gradleVersion = "4.4.1"
 	distributionType = Wrapper.DistributionType.ALL
 }
 
