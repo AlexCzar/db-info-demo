@@ -40,38 +40,39 @@ repositories {
 
 dependencies {
 	listOf(
-			kotlin("stdlib-jre8"),
-			kotlin("reflect"),
-			"io.github.microutils:kotlin-logging:1.4.6",
+		kotlin("stdlib-jre8"),
+		kotlin("reflect"),
+		"io.github.microutils:kotlin-logging:1.4.6",
 
-			springBoot("actuator"),
-			springBoot("starter-logging"),
-			springBoot("starter-security"),
-			springBoot("starter-web"),
+		springBoot("actuator"),
+		springBoot("starter-logging"),
+		springBoot("starter-security"),
+		springBoot("starter-web"),
 
-			"org.springframework.data:spring-data-jpa",
-			"org.springframework:spring-jdbc",
-			"org.hibernate:hibernate-entitymanager",
-			"com.h2database:h2",
-			"com.zaxxer:HikariCP",
+		"org.springframework.data:spring-data-jpa",
+		"org.springframework:spring-jdbc",
+		"org.hibernate:hibernate-entitymanager",
+		"com.h2database:h2",
+		"com.zaxxer:HikariCP",
 
-			springSecurity("config"),
-			springSecurity("web"),
-			"io.jsonwebtoken:jjwt:0.9.0",
-			"org.postgresql:postgresql",
-			"io.springfox:springfox-swagger2:$swaggerVersion",
-			"io.springfox:springfox-swagger-ui:$swaggerVersion"
+		springSecurity("config"),
+		springSecurity("web"),
+		"io.jsonwebtoken:jjwt:0.9.0",
+		"org.postgresql:postgresql",
+		"io.springfox:springfox-swagger2:$swaggerVersion",
+		"io.springfox:springfox-swagger-ui:$swaggerVersion"
 	).forEach { implementation(it) }
 
 	runtimeOnly(springBoot("devtools"))
 
 	listOf(
-			springBoot("starter-test"),
-			springSecurity("test"),
-			"com.jayway.jsonpath:json-path-assert"
+		springBoot("starter-test"),
+		springSecurity("test"),
+		"com.jayway.jsonpath:json-path-assert"
 	).forEach { testImplementation(it) }
 }
 
 fun springBoot(module: String, version: String = "") = "org.springframework.boot:spring-boot-$module:$version"
 fun springFramework(module: String, version: String = "") = "org.springframework:spring-$module:$version"
-fun springSecurity(module: String, version: String = "") = "org.springframework.security:spring-security-$module:$version"
+fun springSecurity(module: String, version: String = "") =
+	"org.springframework.security:spring-security-$module:$version"

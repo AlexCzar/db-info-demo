@@ -5,11 +5,13 @@ pluginManagement {
 	}
 	resolutionStrategy {
 		eachPlugin {
+			val kotlinVersion = gradle.rootProject.extra["kotlin.version"] as String
 			if (requested.id.id == "org.springframework.boot") {
 				useModule("org.springframework.boot:spring-boot-gradle-plugin:${requested.version}")
 			}
 			if (requested.id.id.startsWith("org.jetbrains.kotlin")) {
-				useVersion(gradle.rootProject.extra["kotlin.version"] as String)
+				println("Using Kotlin version: $kotlinVersion for ${requested.id.id}")
+				useVersion(kotlinVersion)
 			}
 		}
 	}
