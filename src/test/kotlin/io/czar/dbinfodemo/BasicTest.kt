@@ -11,8 +11,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.context.junit4.SpringRunner
 
 @SpringBootTest(
-		classes = arrayOf(DbInfoDemo::class),
-		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+	classes = [DbInfoDemo::class],
+	webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
 @RunWith(SpringRunner::class)
 abstract class BasicTest {
 	@Autowired

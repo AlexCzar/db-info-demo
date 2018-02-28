@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletRequest
 
 @RestController
 class RegistrationController(
-		private val registrationService: UserRegistrationService) {
+	private val registrationService: UserRegistrationService
+) {
 
 	@PostMapping("/register")
 	fun register(user: UserRegistration, request: HttpServletRequest) {
@@ -28,6 +29,6 @@ class RegistrationController(
 }
 
 data class UserRegistration(
-		val username: String,
-		val password: String
+	val username: String,
+	val password: String
 )

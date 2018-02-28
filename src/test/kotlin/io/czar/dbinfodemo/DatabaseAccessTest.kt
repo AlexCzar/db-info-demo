@@ -34,8 +34,15 @@ class DatabaseAccessTest : BasicTest() {
 		val `reasonable minimum number of tables in default postgres setup` = 300
 		restClient.get<String>("/user/database/dbinfodemo/listTables", credentials).run {
 			assertStatus(HttpStatus.OK)
-			assertThat(body, isJson(withJsonPath("$.length()", greaterThanOrEqualTo(
-					`reasonable minimum number of tables in default postgres setup`))))
+			assertThat(
+				body, isJson(
+					withJsonPath(
+						"$.length()", greaterThanOrEqualTo(
+							`reasonable minimum number of tables in default postgres setup`
+						)
+					)
+				)
+			)
 		}
 	}
 
@@ -59,16 +66,24 @@ class DatabaseAccessTest : BasicTest() {
 	fun `previewing table`() {
 		restClient.get<String>("/user/database/dbinfodemo/public/orders", credentials).run {
 			assertStatus(HttpStatus.OK)
-			assertThat(body, isJson(allOf(
-					withJsonPath("$.columns.length()", equalTo(3)),
-					withJsonPath("$.columns.*", equalTo(listOf("order_id", "product_id", "quantity"))),
-					withJsonPath("$.rows.length()", equalTo(3)),
-					withJsonPath("$.rows.*", equalTo(listOf(
-							listOf(1, 1, 1),
-							listOf(2, 1, 3),
-							listOf(3, 1, 2)
-					)))
-			)))
+			assertThat(
+				body, isJson(
+					allOf(
+						withJsonPath("$.columns.length()", equalTo(3)),
+						withJsonPath("$.columns.*", equalTo(listOf("order_id", "product_id", "quantity"))),
+						withJsonPath("$.rows.length()", equalTo(3)),
+						withJsonPath(
+							"$.rows.*", equalTo(
+								listOf(
+									listOf(1, 1, 1),
+									listOf(2, 1, 3),
+									listOf(3, 1, 2)
+								)
+							)
+						)
+					)
+				)
+			)
 		}
 	}
 
@@ -76,13 +91,21 @@ class DatabaseAccessTest : BasicTest() {
 	fun `previewing table with limit`() {
 		restClient.get<String>("/user/database/dbinfodemo/public/orders?limit=2", credentials).run {
 			assertStatus(HttpStatus.OK)
-			assertThat(body, isJson(allOf(
-					withJsonPath("$.rows.length()", equalTo(2)),
-					withJsonPath("$.rows.*", equalTo(listOf(
-							listOf(1, 1, 1),
-							listOf(2, 1, 3)
-					)))
-			)))
+			assertThat(
+				body, isJson(
+					allOf(
+						withJsonPath("$.rows.length()", equalTo(2)),
+						withJsonPath(
+							"$.rows.*", equalTo(
+								listOf(
+									listOf(1, 1, 1),
+									listOf(2, 1, 3)
+								)
+							)
+						)
+					)
+				)
+			)
 		}
 	}
 }

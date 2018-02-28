@@ -20,7 +20,12 @@ class TestRestClient(val rest: TestRestTemplate) {
 		return rest.exchange(restPath, GET, HttpEntity<Any>(headers), T::class.java)
 	}
 
-	inline fun <reified T> post(restPath: String, credentials: Credentials, body: Any, csrfToken: String?): ResponseEntity<T> {
+	inline fun <reified T> post(
+		restPath: String,
+		credentials: Credentials,
+		body: Any,
+		csrfToken: String?
+	): ResponseEntity<T> {
 		val headers = HttpHeaders().apply {
 			add(HttpHeaders.AUTHORIZATION, credentials.token)
 			if (csrfToken != null) {
@@ -33,18 +38,18 @@ class TestRestClient(val rest: TestRestTemplate) {
 	}
 
 	fun login(username: String, password: String): Credentials = rest.execute(URI("/login"), POST,
-			{ request: ClientHttpRequest ->
-				with(request.body) {
-					write("username=$username&password=$password".toByteArray())
-					flush()
-					close()
-				}
-				val csrfToken = UUID.randomUUID().toString()
-				with(request.headers) {
-					set(HttpHeaders.COOKIE, "${WebSecurityConfig.CSRF_COOKIE}=$csrfToken")
-					set(WebSecurityConfig.CSRF_HEADER, csrfToken)
-				}
-			}, { response: ClientHttpResponse -> Credentials(response.headers[HttpHeaders.AUTHORIZATION]?.get(0)) })
+		{ request: ClientHttpRequest ->
+			with(request.body) {
+				write("username=$username&password=$password".toByteArray())
+				flush()
+				close()
+			}
+			val csrfToken = UUID.randomUUID().toString()
+			with(request.headers) {
+				set(HttpHeaders.COOKIE, "${WebSecurityConfig.CSRF_COOKIE}=$csrfToken")
+				set(WebSecurityConfig.CSRF_HEADER, csrfToken)
+			}
+		}, { response: ClientHttpResponse -> Credentials(response.headers[HttpHeaders.AUTHORIZATION]?.get(0)) })
 
 }
 

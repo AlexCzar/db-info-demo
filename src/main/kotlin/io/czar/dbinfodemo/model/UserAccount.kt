@@ -5,15 +5,15 @@ import javax.persistence.*
 
 @Entity(name = "user_accounts")
 data class UserAccount(
-		@Id
-		@GeneratedValue
-		override val id: Long? = null,
-		@Column(unique = true, nullable = false, updatable = false)
-		val username: String,
-		var password: String,
-		var enabled: Boolean = true,
-		@OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
-		val configurations: MutableSet<PostgreSettings> = mutableSetOf()
+	@Id
+	@GeneratedValue
+	override val id: Long? = null,
+	@Column(unique = true, nullable = false, updatable = false)
+	val username: String,
+	var password: String,
+	var enabled: Boolean = true,
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "userId")
+	val configurations: MutableSet<PostgreSettings> = mutableSetOf()
 ) : BaseEntity {
 
 	@Column(unique = true)

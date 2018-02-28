@@ -13,14 +13,22 @@ class StatelessCsrfFilter : OncePerRequestFilter() {
 
 	private val accessDeniedHandler = AccessDeniedHandlerImpl()
 
-	override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
+	override fun doFilterInternal(
+		request: HttpServletRequest,
+		response: HttpServletResponse,
+		filterChain: FilterChain
+	) {
 
 		if (csrfTokenIsRequired(request)) {
 			val csrfHeaderToken: String? = request.getHeader(CSRF_HEADER)
 			val csrfCookieToken: String? = request.cookies?.asSequence()?.find { it.name == CSRF_COOKIE }?.value
 
 			if (csrfHeaderToken == null || csrfCookieToken == null || csrfCookieToken != csrfHeaderToken) {
-				accessDeniedHandler.handle(request, response, AccessDeniedException("CSRF tokens missing or not matching"))
+				accessDeniedHandler.handle(
+					request,
+					response,
+					AccessDeniedException("CSRF tokens missing or not matching")
+				)
 				return
 			}
 

@@ -13,7 +13,8 @@ class SecurityTest : BasicTest() {
 	@Test
 	fun `accessing secure user with proper auth`() {
 		val credentials = restClient.login("test", "test")
-		val testUserRegex = """UserAccount\(id=1, username=test, password=.+, enabled=true, configurations=\[PostgreSettings\(.+\)\]\)"""
+		val testUserRegex =
+			"""UserAccount\(id=1, username=test, password=.+, enabled=true, configurations=\[PostgreSettings\(.+\)\]\)"""
 		restClient.get<String>("/user", credentials).run {
 			assertStatus(HttpStatus.OK)
 			assertThat(body, matchesPattern(testUserRegex))

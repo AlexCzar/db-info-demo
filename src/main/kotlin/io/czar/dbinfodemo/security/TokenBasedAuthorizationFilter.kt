@@ -14,7 +14,8 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @ConfigurationProperties("security.token")
-class TokenBasedAuthorizationFilter(authenticationManager: AuthenticationManager) : BasicAuthenticationFilter(authenticationManager) {
+class TokenBasedAuthorizationFilter(authenticationManager: AuthenticationManager) :
+	BasicAuthenticationFilter(authenticationManager) {
 	lateinit var secret: String
 	override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
 
@@ -24,9 +25,9 @@ class TokenBasedAuthorizationFilter(authenticationManager: AuthenticationManager
 			authorizationToken = authorizationToken.replaceFirst(TOKEN_PREFIX.toRegex(), "")
 
 			val userId = Jwts.parser()
-					.setSigningKey(secret)
-					.parseClaimsJws(authorizationToken)
-					.body["userId"].let {
+				.setSigningKey(secret)
+				.parseClaimsJws(authorizationToken)
+				.body["userId"].let {
 				when (it) {
 					is Int -> it.toLong()
 					is Long -> it

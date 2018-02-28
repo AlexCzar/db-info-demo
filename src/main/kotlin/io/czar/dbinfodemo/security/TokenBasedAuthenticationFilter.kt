@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @ConfigurationProperties(prefix = "security.token")
-class TokenBasedAuthenticationFilter(authenticationManager: AuthenticationManager) : UsernamePasswordAuthenticationFilter() {
+class TokenBasedAuthenticationFilter(authenticationManager: AuthenticationManager) :
+	UsernamePasswordAuthenticationFilter() {
 	/**
 	 * Secret to use for JWT encryption.
 	 */
@@ -25,16 +26,18 @@ class TokenBasedAuthenticationFilter(authenticationManager: AuthenticationManage
 		setAuthenticationManager(authenticationManager)
 	}
 
-	override fun successfulAuthentication(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain?,
-										  authentication: Authentication) {
+	override fun successfulAuthentication(
+		request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain?,
+		authentication: Authentication
+	) {
 		val identifiedUser = authentication.principal as IdentifiedUser
 		val token = Jwts.builder()
-				.setId(UUID.randomUUID().toString())
-				.setSubject(identifiedUser.username)
-				.claim("userId", identifiedUser.id)
-				.setExpiration(Date(System.currentTimeMillis() + TOKEN_LIFETIME))
-				.signWith(SignatureAlgorithm.HS512, secret)
-				.compact()
+			.setId(UUID.randomUUID().toString())
+			.setSubject(identifiedUser.username)
+			.claim("userId", identifiedUser.id)
+			.setExpiration(Date(System.currentTimeMillis() + TOKEN_LIFETIME))
+			.signWith(SignatureAlgorithm.HS512, secret)
+			.compact()
 
 		response.addHeader(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + token)
 	}

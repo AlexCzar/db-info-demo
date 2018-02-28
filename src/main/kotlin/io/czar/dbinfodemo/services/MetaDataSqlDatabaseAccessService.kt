@@ -31,40 +31,48 @@ class MetaDataSqlDatabaseAccessService : SqlDatabaseAccessService {
 	}
 
 	override fun listTables(dbName: String, schema: String?, user: UserAccount, types: List<String>?) =
-			withDataSourceConnection(dbName, user) { connection ->
-				val resultSet = connection.metaData.getTables(null, schema, null, types?.toTypedArray())
-				generateSequence {
-					if (resultSet.next()) {
-						val name = resultSet.getString("table_name")
-						val currentTableSchema = resultSet.getString("table_schem")
-						val primaryKeys = connection.metaData.getPrimaryKeys(null, schema, name)
-						while (primaryKeys.next()) {
-							logger.info {
-								(primaryKeys.getString("COLUMN_NAME") + "===" + primaryKeys.getString("PK_NAME"))
-							}
+		withDataSourceConnection(dbName, user) { connection ->
+			val resultSet = connection.metaData.getTables(null, schema, null, types?.toTypedArray())
+			generateSequence {
+				if (resultSet.next()) {
+					val name = resultSet.getString("table_name")
+					val currentTableSchema = resultSet.getString("table_schem")
+					val primaryKeys = connection.metaData.getPrimaryKeys(null, schema, name)
+					while (primaryKeys.next()) {
+						logger.info {
+							(primaryKeys.getString("COLUMN_NAME") + "===" + primaryKeys.getString("PK_NAME"))
 						}
-						val importedKeys = connection.metaData.getImportedKeys(null, schema, name)
-						while (importedKeys.next()) {
-							logger.info {
-								"${importedKeys.getString("PKTABLE_NAME")}.${importedKeys.getString("PKCOLUMN_NAME")}→${importedKeys.getString("FKTABLE_NAME")}.${importedKeys.getString("FKCOLUMN_NAME")}"
-							}
+					}
+					val importedKeys = connection.metaData.getImportedKeys(null, schema, name)
+					while (importedKeys.next()) {
+						logger.info {
+							"${importedKeys.getString("PKTABLE_NAME")}.${importedKeys.getString("PKCOLUMN_NAME")}→${importedKeys.getString(
+								"FKTABLE_NAME"
+							)}.${importedKeys.getString("FKCOLUMN_NAME")}"
 						}
-						DbTableInfo(
-								name = name,
-								type = resultSet.getString("table_type") ?: "",
-								schema = currentTableSchema,
-								catalog = resultSet.getString("table_cat") ?: "",
-								remarks = resultSet.getString("remarks") ?: "",
-								columns = connection.metaData.getColumns(null, currentTableSchema, name, null).columnsInfo()
-						)
-					} else null
-				}.toList()
-			}
+					}
+					DbTableInfo(
+						name = name,
+						type = resultSet.getString("table_type") ?: "",
+						schema = currentTableSchema,
+						catalog = resultSet.getString("table_cat") ?: "",
+						remarks = resultSet.getString("remarks") ?: "",
+						columns = connection.metaData.getColumns(null, currentTableSchema, name, null).columnsInfo()
+					)
+				} else null
+			}.toList()
+		}
 
-	override fun previewTable(dbName: String, schema: String, tableName: String, user: UserAccount, limit: Int): TablePreview =
-			JdbcTemplate(buildDataSource(dbName, user))
-					.query("SELECT * FROM $schema.$tableName LIMIT $limit", previewExtractor)
-					?: TablePreview.EMPTY
+	override fun previewTable(
+		dbName: String,
+		schema: String,
+		tableName: String,
+		user: UserAccount,
+		limit: Int
+	): TablePreview =
+		JdbcTemplate(buildDataSource(dbName, user))
+			.query("SELECT * FROM $schema.$tableName LIMIT $limit", previewExtractor)
+				?: TablePreview.EMPTY
 
 	val previewExtractor = ResultSetExtractor { resultSet ->
 		val columnCount = resultSet.metaData.columnCount
@@ -78,7 +86,7 @@ class MetaDataSqlDatabaseAccessService : SqlDatabaseAccessService {
 	}
 
 	private fun <T> withDataSourceConnection(dbName: String, user: UserAccount, block: (Connection) -> T) =
-			buildDataSource(dbName, user).connection.use(block)
+		buildDataSource(dbName, user).connection.use(block)
 
 	private fun buildDataSource(dbName: String, user: UserAccount): HikariDataSource {
 		val dbConfiguration = getDbConfiguration(dbName, user)
@@ -97,16 +105,17 @@ class MetaDataSqlDatabaseAccessService : SqlDatabaseAccessService {
 
 	private fun getDbConfiguration(dbName: String, user: UserAccount): PostgreSettings {
 		logger.info { user.configurations }
-		return user.configurations.find { it.name == dbName } ?: throw IllegalArgumentException("Database $dbName not configured.")
+		return user.configurations.find { it.name == dbName }
+				?: throw IllegalArgumentException("Database $dbName not configured.")
 	}
 }
 
 private fun ResultSet.columnsInfo(): List<DbColumnInfo> = generateSequence {
 	if (next()) DbColumnInfo(
-			index = getInt("ORDINAL_POSITION"),
-			name = getString("COLUMN_NAME"),
-			type = getInt("DATA_TYPE"),
-			typeName = getString("TYPE_NAME")
+		index = getInt("ORDINAL_POSITION"),
+		name = getString("COLUMN_NAME"),
+		type = getInt("DATA_TYPE"),
+		typeName = getString("TYPE_NAME")
 	)
 	else null
 }.toList()

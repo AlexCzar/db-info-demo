@@ -22,9 +22,9 @@ import java.util.*
 class Initializer {
 	@Bean
 	fun repositoryPopulator() =
-			CustomRepositoryPopulatorFactoryBean().apply {
-				setResources(arrayOf(ClassPathResource("test-data.json")))
-			}
+		CustomRepositoryPopulatorFactoryBean().apply {
+			setResources(arrayOf(ClassPathResource("test-data.json")))
+		}
 }
 
 class CustomRepositoryPopulatorFactoryBean : Jackson2RepositoryPopulatorFactoryBean() {
@@ -70,6 +70,6 @@ class CustomJackson2ResourceReader(private val mapper: ObjectMapper) : Jackson2R
 fun getData(set: DataSet) = set.users.toMutableList<Any>().apply { addAll(set.configurations) }
 
 class DataSet(
-		val users: Collection<UserAccount> = listOf(),
-		val configurations: Collection<PostgreSettings> = listOf()
+	val users: Collection<UserAccount> = listOf(),
+	val configurations: Collection<PostgreSettings> = listOf()
 )

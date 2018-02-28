@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/user/configurations")
 class UserConfigurationsController(
-		private val dbConfigurations: PostgreSettingsRepository) {
+	private val dbConfigurations: PostgreSettingsRepository
+) {
 
 	companion object : KLogging()
 

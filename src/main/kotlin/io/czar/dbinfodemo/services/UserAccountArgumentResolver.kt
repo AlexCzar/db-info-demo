@@ -14,7 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer
 
 @Service
 class UserAccountArgumentResolver(
-		val userAccountRepository: UserAccountRepository
+	val userAccountRepository: UserAccountRepository
 ) : HandlerMethodArgumentResolver {
 	companion object : KLogging()
 
@@ -25,7 +25,10 @@ class UserAccountArgumentResolver(
 
 	@Transactional(readOnly = true)
 	override fun resolveArgument(
-			parameter: MethodParameter, mavContainer: ModelAndViewContainer, webRequest: NativeWebRequest, binderFactory: WebDataBinderFactory
+		parameter: MethodParameter,
+		mavContainer: ModelAndViewContainer,
+		webRequest: NativeWebRequest,
+		binderFactory: WebDataBinderFactory
 	): UserAccount = (webRequest.userPrincipal as? Authentication)?.principal.let {
 		userAccountRepository.getOne(checkNotNull(it as? Long) { "User should have been identified at this point." })
 	}
